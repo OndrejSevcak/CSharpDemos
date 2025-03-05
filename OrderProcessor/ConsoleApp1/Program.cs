@@ -26,15 +26,16 @@ if(orders != null)
     var cancellationToken = cancellationTokenSource.Token;
     
     sw.Start();
-    orderProcessor.ProcessOrdersSequentially(orders, cancellationToken).Wait();    //takes 50s
+    await orderProcessor.ProcessOrdersSequentially(orders, cancellationToken);    //takes 50s
     sw.Stop();
     Console.WriteLine($"Processing time: {sw.ElapsedMilliseconds / 1000}s");
 
-    var orderProcessor2 = serviceProvider.GetService<OrderProcessor>();
-    sw.Restart();
-    orderProcessor2.ProcessOrdersConcurently(orders, cancellationToken).Wait();    //takes 4s
-    sw.Stop();
-    Console.WriteLine($"Processing time: {sw.ElapsedMilliseconds / 1000}s");
+
+    // var orderProcessor2 = serviceProvider.GetService<OrderProcessor>();
+    // sw.Restart();
+    // orderProcessor2.ProcessOrdersConcurently(orders, cancellationToken).Wait();    //takes 4s
+    // sw.Stop();
+    // Console.WriteLine($"Processing time: {sw.ElapsedMilliseconds / 1000}s");
 }
 else
 {

@@ -34,6 +34,7 @@ public class OrderProcessor
         // Create a producer task that adds orders to the blocking collection
         var producerTask = Task.Run(() =>
         {
+            Console.WriteLine("Producer task started");
             try
             {
                 foreach (var order in orders)
@@ -49,18 +50,21 @@ public class OrderProcessor
             finally
             {
                 _orders.CompleteAdding();
+                Console.WriteLine("Producer task completed adding orders to the queue");
             }
         }, cancellationToken);
 
         // Create a single consumer task to process orders sequentially
         var consumerTask = Task.Run(() =>
         {
+            Console.WriteLine("Consumer task started");
             try
             {
                 foreach (var order in _orders.GetConsumingEnumerable(cancellationToken))
                 {
                     ProcessOrder(order, cancellationToken);
                 }
+                Console.WriteLine("Consumer task completed processing orders");
             }
             catch(OperationCanceledException)
             {
