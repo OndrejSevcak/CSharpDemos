@@ -1,6 +1,8 @@
 @DataStreamingAPI_HostAddress = http://localhost:5129
 
-GET {{DataStreamingAPI_HostAddress}}/weatherforecast/
+GET {{DataStreamingAPI_HostAddress}}/weatherforecast/GetForecast
 Accept: application/json
 
 ###
+GET {{DataStreamingAPI_HostAddress}}/weatherforecast/GetForecastStream
+Accept: application/json

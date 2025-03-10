@@ -19,7 +19,7 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetForecast")]
+    [HttpGet("GetForecast")]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -31,7 +31,7 @@ public class WeatherForecastController : ControllerBase
         .ToArray();
     }
 
-    [HttpGet(Name = "GetForecastStream")]
+    [HttpGet("GetForecastStream")]
     public async IAsyncEnumerable<WeatherForecast> GetStreaming([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var index = 0;
