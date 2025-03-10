@@ -1,6 +1,7 @@
 ﻿// IEnumerable demo
 
 using System.Collections;
+using IEnumerableDemo;
 
 //creating basic IEnumerable collection
 IEnumerable<int> collection = [1, 2, 3, 4, 5];  
@@ -35,61 +36,76 @@ foreach (int item in customCollection)
     Console.WriteLine(item);
 }
 
-//custom implementation of Enumerator
-public class MyCustomEvenEnumerator : IEnumerator<int>
+
+//yield return - deffered execution demo
+IEnumerable<int> GetNumbersOneByOne()
 {
-    private int[] _data;
-    private int _currentIndex = -1;
-
-    public MyCustomEvenEnumerator(int[] data)
-    {
-        _data = data;
-    }
-
-    public int Current => _data[_currentIndex];
-    object IEnumerator.Current => Current;
-
-    public bool MoveNext()
-    {
-        _currentIndex++;
-        if(_currentIndex >= _data.Length)
-        {
-            return false;
-        }
-
-        if(_data[_currentIndex] % 2 != 0)
-        {
-            return MoveNext();
-        }
-
-        return _currentIndex < _data.Length;
-    }
-
-    public void Reset()
-    {
-        _currentIndex = -1;
-    }
-
-    public void Dispose(){}
+    yield return 1;
+    yield return 3;
+    yield return 2;
+    yield return 4;
 }
 
-//Custom implementation of IEnumerable
-public class MyCustomEvenEnumerable : IEnumerable<int>
+var numbers = GetNumbersOneByOne();
+
+foreach (var number in numbers) 
 {
-    private MyCustomEvenEnumerator _enumerator;
+  Console.WriteLine(number);
+  // Output:
+  // 1
+  // 3
+  // 2
+  //4
+}
 
-    public MyCustomEvenEnumerable(int[] data)
-    {
-        _enumerator = new MyCustomEvenEnumerator(data);
-    }
-
-    public IEnumerator<int> GetEnumerator()
-    {
-        return _enumerator;
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
+//infinte sequence using yield return
+IEnumerable<int> GenerateNumbers()
+{
+    int i = 1;
+    while(true){
+        yield return i++;
     }
 }
+
+var infiniteNumbers = GenerateNumbers();
+foreach (var number in infiniteNumbers) 
+{
+  if(number > 10) break;
+  Console.WriteLine(number);
+}
+
+//filtering data
+IEnumerable<int> GetEvenNumbers(IEnumerable<int> numbers)
+{
+    foreach (var num in numbers)
+    {
+        if (num % 2 == 0)
+            yield return num;
+    }
+}
+
+var evenNumbers = GetEvenNumbers(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+foreach (var number in evenNumbers) 
+{
+  Console.WriteLine(number);
+  // Output:
+  // 2
+  // 4
+  // 6
+  // 8
+  // 10
+}
+
+//processing large text file line by line
+IEnumerable<string> ReadLargeFile(string filePath)
+{
+    using (StreamReader reader = new StreamReader(filePath))
+    {
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            yield return line;
+        }
+    }
+}
+

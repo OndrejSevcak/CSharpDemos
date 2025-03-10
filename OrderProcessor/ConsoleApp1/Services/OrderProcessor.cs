@@ -29,50 +29,59 @@ public class OrderProcessor
     /// </summary>
     /// <param name="orders"></param>
     /// <returns></returns>
-    public Task ProcessOrdersSequentially(IEnumerable<Order> orders, CancellationToken cancellationToken)
+    public async Task ProcessOrdersSequentially(IEnumerable<Order> orders, CancellationToken cancellationToken)
     {
         // Create a producer task that adds orders to the blocking collection
-        var producerTask = Task.Run(() =>
+        var producerTask = Task.Run(async () =>
         {
-            Console.WriteLine("Producer task started");
+            _logger.LogInformation("Producer task started");
             try
             {
                 foreach (var order in orders)
                 {
                     _orders.Add(order, cancellationToken);
-                    Console.WriteLine($"Added order {order.OrderId} to the queue on thread {Task.CurrentId}");
+                    _logger.LogInformation($"Added order {order.OrderId} to the queue on thread {Task.CurrentId}");
+                    await Task.Yield(); // Yield to prevent blocking
                 }
             }
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 _logger.LogInformation("The operation was canceled.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding orders to the queue.");
             }
             finally
             {
                 _orders.CompleteAdding();
-                Console.WriteLine("Producer task completed adding orders to the queue");
+                _logger.LogInformation("Producer task completed adding orders to the queue");
             }
         }, cancellationToken);
 
         // Create a single consumer task to process orders sequentially
-        var consumerTask = Task.Run(() =>
+        var consumerTask = Task.Run(async () =>
         {
-            Console.WriteLine("Consumer task started");
+            _logger.LogInformation("Consumer task started");
             try
             {
                 foreach (var order in _orders.GetConsumingEnumerable(cancellationToken))
                 {
-                    ProcessOrder(order, cancellationToken);
+                    await ProcessOrderAsync(order, cancellationToken);
                 }
-                Console.WriteLine("Consumer task completed processing orders");
+                _logger.LogInformation("Consumer task completed processing orders");
             }
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 _logger.LogInformation("The operation was canceled.");
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while processing orders.");
+            }
         }, cancellationToken);
 
-        return Task.WhenAll(producerTask, consumerTask);
+        await Task.WhenAll(producerTask, consumerTask);
     }
 
     /// <summary>
@@ -122,6 +131,24 @@ public class OrderProcessor
         }, cancellationToken)).ToArray();
 
         return Task.WhenAll(producerTask, Task.WhenAll(consumerTasks));
+    }
+
+    private async Task ProcessOrderAsync(Order order, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Simulate processing time
+            await Task.Delay(500, cancellationToken);
+            _logger.LogInformation($"Processed order {order.OrderId} on thread {Task.CurrentId}");
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("The operation was canceled.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"An error occurred while processing order {order.OrderId}.");
+        }
     }
 
     private void ProcessOrder(Order order, CancellationToken cancellationToken)
