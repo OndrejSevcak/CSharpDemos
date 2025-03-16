@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockPriceAPI", "StockPriceAPI\StockPriceAPI.csproj", "{F026EA3A-26E9-424C-BC89-BC591483B1FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F026EA3A-26E9-424C-BC89-BC591483B1FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F026EA3A-26E9-424C-BC89-BC591483B1FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F026EA3A-26E9-424C-BC89-BC591483B1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F026EA3A-26E9-424C-BC89-BC591483B1FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
